@@ -1,0 +1,14 @@
+{
+    "name": "fishpig/magento2-smtp",
+    "description": "Use your Google (GSuite, Gmail) account to send your Magento 2 emails.",
+    "type": "magento2-module",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "FishPig\\Smtp\\": ""
+        }
+    },
+    "version": "1.0.0"
+}

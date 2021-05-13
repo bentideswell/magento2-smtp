@@ -26,6 +26,10 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     public function sendMessage()
     {
         try {
+            if (!$this->config->isEnabled()) {
+                throw new \Exception('SMTP module is disabled.');
+            }
+
             $laminasMessage = \Laminas\Mail\Message::fromString(
                 $this->getMessage()->getRawMessage()
             )->setEncoding('utf-8');

@@ -10,7 +10,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use FishPig\Smtp\Model\Config\Source\MailProvider;
 use Laminas\Mail\Transport\Sendmail;
-use Laminas\Mail\Transport\Smtp as SmtpTransport;
+use FishPig\Smtp\Model\Transport\Smtp as SmtpTransport;
 use Laminas\Mail\Transport\SmtpOptions;
 
 
@@ -33,7 +33,7 @@ class Config
         $this->mailProvider = $mailProvider;
         $this->encryptor = $encryptor;
     }
-    
+
     /**
      * @return bool
      */
@@ -41,7 +41,7 @@ class Config
     {
         return $this->scopeConfig->isSetFlag(self::CONFIG_BASE . '/settings/enabled');
     }
-    
+
     /**
      * @return int
      */
@@ -52,11 +52,11 @@ class Config
         }
 
         $mailProvider = (int)$this->scopeConfig->getValue(self::CONFIG_BASE . '/settings/mail_provider');
-        
+
         if ($this->mailProvider->isValidMailProvider($mailProvider)) {
             return $mailProvider;
         }
-        
+
         return 0;
     }
 
@@ -75,41 +75,87 @@ class Config
                             'port' => 587,
                             'connection_class' => 'login',
                             'connection_config' => [
-                                'username' => $this->getGoogleUsername(),
-                                'password' => $this->getGooglePassword(),
+                                'username' => $this->getProviderUsername('google'),
+                                'password' => $this->getProviderPassword('google'),
                                 'ssl' => 'tls',
                                 'port' => 587
                             ]
                         ]
                     )
                 );
-                break; 
+                break;
+            case MailProvider::TYPE_OFFICE365:
+                return new SmtpTransport(
+                    new SmtpOptions(
+                        [
+                            'name' => 'office365',
+                            'host' => 'smtp.office365.com',
+                            'port' => 587,
+                            'connection_class' => 'login',
+                            'connection_config' => [
+                                'username' => $this->getProviderUsername('office365'),
+                                'password' => $this->getProviderPassword('office365'),
+                                'ssl' => 'tls',
+                                'port' => 587
+                            ]
+                        ]
+                    )
+                );
+                break;
+            case MailProvider::TYPE_SMTP:
+                return new SmtpTransport(
+                    new SmtpOptions(
+                        [
+                            'name' => 'smtp',
+                            'host' => $this->getProviderConfig('smtp', 'host'),
+                            'port' => (int)$this->getProviderConfig('smtp', 'port'),
+                            'connection_class' => 'login',
+                            'connection_config' => [
+                                'username' => $this->getProviderUsername('smtp'),
+                                'password' => $this->getProviderPassword('smtp'),
+                                'ssl' => (int)$this->getProviderConfig('smtp', 'ssl') === 1 ? 'tls' : '',
+                                'port' => (int)$this->getProviderConfig('smtp', 'port')
+                            ]
+                        ]
+                    )
+                );
+                break;
             default:
                 return new Sendmail();
                 break;
         }
     }
-    
+
     /**
      * @return string
      */
-    private function getGoogleUsername() : string
+    private function getProviderConfig(string $provider, string $field) : string
     {
-        return $this->throwIfEmpty(
-            $this->scopeConfig->getValue(self::CONFIG_BASE . '/provider_google/username'),
-            'google.username'
+        return $this->scopeConfig->getValue(
+            self::CONFIG_BASE . '/provider_' . $provider . '/' . $field
         );
     }
 
     /**
      * @return string
      */
-    private function getGooglePassword() : string
+    private function getProviderUsername(string $provider) : string
+    {
+        return $this->throwIfEmpty(
+            $this->getProviderConfig($provider, 'username'),
+            $provider . '.username'
+        );
+    }
+
+    /**
+     * @return string
+     */
+    private function getProviderPassword(string $provider) : string
     {
         return $this->encryptor->decrypt(
             $this->throwIfEmpty(
-                $this->scopeConfig->getValue(self::CONFIG_BASE . '/provider_google/password'),
-                'google.password'
+                $this->getProviderConfig($provider, 'password'),
+                $provider . '.password'
             )
         );
     }
@@ -124,10 +170,10 @@ class Config
         if (($str = trim($str)) === '') {
             throw new \Exception('Empty value found in ' . $field);
         }
-        
+
         return $str;
     }
-    
+
     /**
      * @return bool
      */

@@ -6,6 +6,9 @@
                 <enabled>1</enabled>
                 <mail_provider>1</mail_provider>
             </settings>
+            <provider_smtp>
+                <ssl>1</ssl>
+            </provider_smtp>
         </fishpig_smtp>
     </default>
 </config>

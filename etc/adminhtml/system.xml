@@ -20,20 +20,65 @@
                     <label>Mail Provider</label>
                     <source_model>FishPig\Smtp\Model\Config\Source\MailProvider</source_model>
                 </field>
-            </group>
-            <group id="provider_google" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Google</label>
-                <depends>
-                    <field id="fishpig_smtp/settings/mail_provider">1</field>
-                </depends>
-                <field id="username" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Username</label>
-                </field>
-                <field id="password" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Password</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>Setup an App password in your Google account admin.</comment>
-                </field>
+                <group id="provider_google" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google</label>
+                    <depends>
+                        <field id="fishpig_smtp/settings/mail_provider">1</field>
+                    </depends>
+                    <field id="username" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Username</label>
+                        <config_path>fishpig_smtp/provider_google/username</config_path>
+                    </field>
+                    <field id="password" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Password</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <config_path>fishpig_smtp/provider_google/password</config_path>
+                        <comment>Setup an App password in your Google account admin.</comment>
+                    </field>
+                </group>
+                <group id="provider_office365" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Office 365</label>
+                    <depends>
+                        <field id="fishpig_smtp/settings/mail_provider">2</field>
+                    </depends>
+                    <field id="username" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Username</label>
+                        <config_path>fishpig_smtp/provider_office365/username</config_path>
+                    </field>
+                    <field id="password" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Password</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <config_path>fishpig_smtp/provider_office365/password</config_path>
+                    </field>
+                </group>
+                <group id="provider_smtp" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>SMTP</label>
+                    <depends>
+                        <field id="fishpig_smtp/settings/mail_provider">9</field>
+                    </depends>
+                    <field id="username" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Username</label>
+                        <config_path>fishpig_smtp/provider_smtp/username</config_path>
+                    </field>
+                    <field id="password" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Password</label>
+                        <config_path>fishpig_smtp/provider_smtp/password</config_path>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    </field>
+                    <field id="host" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Host</label>
+                        <config_path>fishpig_smtp/provider_smtp/host</config_path>
+                    </field>
+                    <field id="port" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Port</label>
+                        <config_path>fishpig_smtp/provider_smtp/port</config_path>
+                    </field>
+                    <field id="ssl" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>SSL</label>
+                        <config_path>fishpig_smtp/provider_smtp/ssl</config_path>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                </group>
             </group>
         </section>
     </system>

@@ -1,6 +1,6 @@
 {
     "name": "fishpig/magento2-smtp",
-    "description": "Use your Google (GSuite, Gmail) account to send your Magento 2 emails.",
+    "description": "Send all Magento 2 emails using Google, Office 365 or a generic SMTP service.",
     "type": "magento2-module",
     "autoload": {
         "files": [
@@ -10,5 +10,5 @@
             "FishPig\\Smtp\\": ""
         }
     },
-    "version": "1.0.2"
+    "version": "1.0.3"
 }

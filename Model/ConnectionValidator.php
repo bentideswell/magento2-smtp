@@ -9,6 +9,16 @@ class ConnectionValidator
     /**
      *
      */
+    private $config = null;
+
+    /**
+     *
+     */
+    private $smtpTransportFactory = null;
+
+    /**
+     *
+     */
     public function __construct(
         \FishPig\Smtp\Model\Config $config,
         \Laminas\Mail\Transport\SmtpFactory $smtpTransportFactory

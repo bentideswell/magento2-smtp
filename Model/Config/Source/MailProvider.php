@@ -14,6 +14,7 @@ class MailProvider
     const TYPE_GOOGLE = 1;
     const TYPE_OFFICE365 = 2;
     const TYPE_SMTP = 9;
+
     /**
      * @param  bool  $includeEmpty = true
      * @return array

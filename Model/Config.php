@@ -22,6 +22,21 @@ class Config
     const CONFIG_BASE = 'fishpig_smtp';
 
     /**
+     *
+     */
+    private $scopeConfig = null;
+
+    /**
+     *
+     */
+    private $mailProvider = null;
+
+    /**
+     *
+     */
+    private $encryptor = null;
+
+    /**
      * @param ScopeConfigInterface $scopeConfig Core store config
      */
     public function __construct(

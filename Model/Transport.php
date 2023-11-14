@@ -11,6 +11,21 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     /**
      *
      */
+    private $config = null;
+
+    /**
+     *
+     */
+    private $message = null;
+
+    /**
+     *
+     */
+    private $transport = null;
+
+    /**
+     *
+     */
     public function __construct(
         \Magento\Framework\Mail\MessageInterface $message,
         \FishPig\Smtp\Model\Config $config

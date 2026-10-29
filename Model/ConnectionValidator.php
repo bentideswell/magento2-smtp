@@ -4,6 +4,8 @@
  */
 namespace FishPig\Smtp\Model;
 
+use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
+
 class ConnectionValidator
 {
     /**
@@ -14,17 +16,10 @@ class ConnectionValidator
     /**
      *
      */
-    private $smtpTransportFactory = null;
-
-    /**
-     *
-     */
     public function __construct(
-        \FishPig\Smtp\Model\Config $config,
-        \Laminas\Mail\Transport\SmtpFactory $smtpTransportFactory
+        \FishPig\Smtp\Model\Config $config
     ) {
         $this->config = $config;
-        $this->smtpTransportFactory = $smtpTransportFactory;
     }
 
     /**
@@ -34,8 +29,15 @@ class ConnectionValidator
     {
         try {
             $transport = $this->config->getConfiguredTransport();
-            return method_exists($transport, 'isConnected')
-                   && $transport->isConnected();
+
+            if (!$transport instanceof SmtpTransport) {
+                return false;
+            }
+
+            $transport->start();
+            $transport->stop();
+
+            return true;
         } catch (\Exception $e) {
             if ($throw) {
                 throw $e;

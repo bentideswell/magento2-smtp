@@ -77,6 +77,7 @@
                         <label>SSL</label>
                         <config_path>fishpig_smtp/provider_smtp/ssl</config_path>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <comment>Port 465 always uses TLS. Other ports use STARTTLS when the server offers it.</comment>
                     </field>
                 </group>
             </group>

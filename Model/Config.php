@@ -9,9 +9,10 @@ namespace FishPig\Smtp\Model;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use FishPig\Smtp\Model\Config\Source\MailProvider;
-use Laminas\Mail\Transport\Sendmail;
-use FishPig\Smtp\Model\Transport\Smtp as SmtpTransport;
-use Laminas\Mail\Transport\SmtpOptions;
+use Symfony\Component\Mailer\Transport\Dsn;
+use Symfony\Component\Mailer\Transport\NativeTransportFactory;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 
 
 class Config
@@ -76,69 +77,45 @@ class Config
     }
 
     /**
-     *
+     * SMTP connections use implicit TLS on port 465, and STARTTLS on other ports when the server offers it.
      */
-    public function getConfiguredTransport()
+    public function getConfiguredTransport(): TransportInterface
     {
         switch ($this->getMailProvider()) {
             case MailProvider::TYPE_GOOGLE:
-                return new SmtpTransport(
-                    new SmtpOptions(
-                        [
-                            'name' => 'gmail',
-                            'host' => 'smtp.gmail.com',
-                            'port' => 587,
-                            'connection_class' => 'login',
-                            'connection_config' => [
-                                'username' => $this->getProviderUsername('google'),
-                                'password' => $this->getProviderPassword('google'),
-                                'ssl' => 'tls',
-                                'port' => 587
-                            ]
-                        ]
-                    )
+                return $this->createSmtpTransport(
+                    'smtp.gmail.com',
+                    587,
+                    $this->getProviderUsername('google'),
+                    $this->getProviderPassword('google')
                 );
-                break;
             case MailProvider::TYPE_OFFICE365:
-                return new SmtpTransport(
-                    new SmtpOptions(
-                        [
-                            'name' => 'office365',
-                            'host' => 'smtp.office365.com',
-                            'port' => 587,
-                            'connection_class' => 'login',
-                            'connection_config' => [
-                                'username' => $this->getProviderUsername('office365'),
-                                'password' => $this->getProviderPassword('office365'),
-                                'ssl' => 'tls',
-                                'port' => 587
-                            ]
-                        ]
-                    )
+                return $this->createSmtpTransport(
+                    'smtp.office365.com',
+                    587,
+                    $this->getProviderUsername('office365'),
+                    $this->getProviderPassword('office365')
                 );
-                break;
             case MailProvider::TYPE_SMTP:
-                return new SmtpTransport(
-                    new SmtpOptions(
-                        [
-                            'name' => 'smtp',
-                            'host' => $this->getProviderConfig('smtp', 'host'),
-                            'port' => (int)$this->getProviderConfig('smtp', 'port'),
-                            'connection_class' => 'login',
-                            'connection_config' => [
-                                'username' => $this->getProviderUsername('smtp'),
-                                'password' => $this->getProviderPassword('smtp'),
-                                'ssl' => (int)$this->getProviderConfig('smtp', 'ssl') === 1 ? 'tls' : '',
-                                'port' => (int)$this->getProviderConfig('smtp', 'port')
-                            ]
-                        ]
-                    )
+                return $this->createSmtpTransport(
+                    $this->getProviderConfig('smtp', 'host'),
+                    (int)$this->getProviderConfig('smtp', 'port'),
+                    $this->getProviderUsername('smtp'),
+                    $this->getProviderPassword('smtp')
                 );
-                break;
             default:
-                return new Sendmail();
-                break;
+                return (new NativeTransportFactory())->create(new Dsn('native', 'default'));
         }
+    }
+
+    /**
+     * @return TransportInterface
+     */
+    private function createSmtpTransport(string $host, int $port, string $username, string $password): TransportInterface
+    {
+        return (new EsmtpTransportFactory())->create(
+            new Dsn('smtp', $host, $username, $password, $port)
+        );
     }
 
     /**
